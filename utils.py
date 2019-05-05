@@ -7,7 +7,7 @@ from mirror import Mirror
 @contextmanager
 def config(filename):
     with open(filename, 'r+') as fobj:
-        data = yaml.load(fobj)
+        data = yaml.full_load(fobj)
 
         yield data
 
