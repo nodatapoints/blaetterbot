@@ -1,4 +1,7 @@
 from contextlib import contextmanager
+import logging
+
+logger = logging.getLogger('bot')
 
 import yaml
 
@@ -31,6 +34,7 @@ def register(name):
 
 def fetchers(config_data):
     for cls_name, data in config_data['mirrors'].items():
+        logger.debug(f'loading {cls_name}')
         cls = _fetchers[cls_name]
         instance = cls(data)
         yield instance

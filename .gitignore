@@ -3,3 +3,4 @@ tags
 *.swp
 config.yaml
 
+*.log

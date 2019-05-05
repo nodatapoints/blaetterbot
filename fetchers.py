@@ -1,12 +1,19 @@
 import requests
 from dataclasses import dataclass
+import logging
+
 from telegram import Bot
 
 from mirror import Mirror, SimpleLookup
 from utils import register, fetchers
 
+logger = logging.getLogger('bot')
+
 @register('ex')
 class ExphyMirror(Mirror):
+    class LoginError(Exception):
+        """Login failed"""
+
     @dataclass
     class DataFormat(Mirror.SerializedMirror):
         login_url: str
@@ -22,6 +29,12 @@ class ExphyMirror(Mirror):
             url=self._data.login_url,
             session=session
         )
+        if not login_token:
+            logger.error('could not find logintoken')
+            raise self.LoginError('no logintoken')
+
+        logging.debug(f'logintoken={login_token}')
+
         login_form = {
             'username': self._data.username,
             'password': self._data.password,
@@ -30,6 +43,7 @@ class ExphyMirror(Mirror):
 
         response = session.post(self._data.login_url, data=login_form)
         response.raise_for_status()
+        logging.debug('logged in successfully')
 
     def fetch(self) -> (bytes, None):
         with requests.Session() as session:
