@@ -2,10 +2,8 @@ import requests
 from dataclasses import dataclass
 import logging
 
-from telegram import Bot
-
 from mirror import Mirror, SimpleLookup
-from utils import register, fetchers
+from utils import register
 
 logger = logging.getLogger('bot')
 
