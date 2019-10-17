@@ -22,23 +22,3 @@ def config(filename):
         )
         fobj.truncate()
 
-_fetchers = {}
-
-def register(name):
-    def wrapper(cls):
-        assert issubclass(cls, Mirror)
-        _fetchers[name] = cls
-        return cls
-
-    return wrapper
-
-def fetchers(config_data):
-    for cls_name, data in config_data['mirrors'].items():
-        logger.debug(f'loading {cls_name}')
-        cls = _fetchers[cls_name]
-        instance = cls(data)
-        yield instance
-        data.update(instance.data)
-
-import fetchers as _ # TODO besser machen
-
