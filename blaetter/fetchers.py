@@ -11,6 +11,7 @@ _fetchers = {}
 def register(name):
     def wrapper(cls):
         assert issubclass(cls, Mirror)
+        cls.lecture_id = name
         _fetchers[name] = cls
         return cls
 

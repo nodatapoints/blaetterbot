@@ -36,13 +36,6 @@ class Mirror(metaclass=ABCMeta):
         assert issubclass(self.DataFormat, Mirror.SerializedMirror)
         self._data = self.DataFormat(**data)
 
-    # used to enforce class attribute "name"
-    # when left undefined, the property is invoked and raises
-    # an exception
-    @property
-    def name(self):
-        raise NotImplementedError('no "name" attribute defined')
-
     def DataFormat(self):
         raise NotImplementedError('no DataFormat defined')
 

@@ -1,5 +1,7 @@
 #!/usr/bin/python3.7
 
+from telegram import Bot
+
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -21,11 +23,11 @@ logger.addHandler(handler)
 
 from blaetter.utils import config_file
 from blaetter.fetchers import fetchers
-from blaetter.telegram import Bot
+from blaetter.subscription import subscribed_users
 
 logger.info('Starting ...')
 
-with config_file('config.yaml') as config_data:
+with config_file() as config_data:
     logger.setLevel(config_data['log_level'])
 
     bot = Bot(config_data['token'])
@@ -35,11 +37,12 @@ with config_file('config.yaml') as config_data:
             logger.debug('skipping')
             continue
 
-        bot.send_document(
-            chat_id=config_data['channel'],
-            document=mirror.process_pdf(pdf),
-            filename=mirror.filename
-        )
+        for uid in subscribed_users(mirror.lecture_id):
+            bot.send_document(
+                chat_id=uid,
+                document=mirror.process_pdf(pdf),
+                filename=mirror.filename
+            )
 
         logger.info(f'uploaded {mirror.filename}')
 

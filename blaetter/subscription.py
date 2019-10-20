@@ -45,8 +45,7 @@ def callback_handler(update: Update, context: CallbackContext):
 
 @contextmanager
 def subscription_file(uid: Union[str, Path], readonly=False):
-    if isinstance(uid, str):
-        user_file = subscribers_dir / uid
+    user_file = subscribers_dir / uid if isinstance(uid, str) else uid
 
     if not user_file.exists():
         user_file.touch()
@@ -66,3 +65,10 @@ def subscription_file(uid: Union[str, Path], readonly=False):
 
     finally:
         fobj.close()
+
+
+def subscribed_users(lecture: str):
+    for user_file in subscribers_dir.iterdir():
+        with subscription_file(user_file) as subscriptions:
+            if lecture in subscriptions:
+                yield int(user_file.name)  # this is the chat id
