@@ -1,12 +1,12 @@
 import logging
 
-from .utils import config_file
+import yaml
 
-
-with config_file(readonly=True) as cfg:
-    config = cfg
+with open('config.yaml') as fobj:
+    config = yaml.full_load(fobj)
 
 log = logging.getLogger('bot')
+logging.basicConfig(level=logging.INFO)
 
 formatter = logging.Formatter(
     fmt='{asctime} [{levelname:^7s}] {msg}',
