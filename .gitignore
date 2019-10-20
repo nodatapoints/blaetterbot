@@ -1,4 +1,5 @@
 __pycache__/*
+blaetter/__pycache__/*
 tags
 *.swp
 config.yaml
