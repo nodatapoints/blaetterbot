@@ -4,6 +4,7 @@ from telegram import Bot
 
 from blaetter.fetchers import fetchers
 from blaetter.subscription import subscribed_users
+from blaetter.database import subscribed_users
 from blaetter import config
 
 import logging
@@ -25,4 +26,5 @@ for mirror in fetchers(config):
             filename=mirror.filename
         )
 
+    mirror.increment()
     log.info(f'uploaded {mirror.filename}')

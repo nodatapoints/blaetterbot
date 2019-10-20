@@ -8,6 +8,8 @@ import logging
 import requests
 import lxml.etree as etree
 
+from .database import get_n, increment_n
+
 log = logging.getLogger('bot')
 
 class Mirror(metaclass=ABCMeta):
@@ -30,14 +32,21 @@ class Mirror(metaclass=ABCMeta):
     class SerializedMirror:
         name: str
         file_format: str
-        n: int
 
     def __init__(self, data: dict):
         assert issubclass(self.DataFormat, Mirror.SerializedMirror)
         self._data = self.DataFormat(**data)
+        self.n = get_n(self.lecture_id)
 
     def DataFormat(self):
         raise NotImplementedError('no DataFormat defined')
+
+    @property
+    def lecture_id(self):
+        raise NotImplementedError('class attribute lecture_id missing')
+
+    def increment(self):
+        increment_n(self.lecture_id)
 
     @property
     def data(self) -> dict:
@@ -45,15 +54,7 @@ class Mirror(metaclass=ABCMeta):
 
     @property
     def filename(self) -> str:
-        return self._data.file_format.format(n=self._data.n)
-
-    @property
-    def n(self):
-        return self._data.n
-
-    @n.setter
-    def n(self, value):
-        self._data.n = value
+        return self._data.file_format.format(n=self.n)
 
     @abstractmethod
     def fetch(self) -> (bytes, None):
@@ -121,7 +122,7 @@ class SimpleLookup(Mirror):
         link_base: str
 
     def fetch(self):
-        pattern = self._data.link_pattern.format(n=self._data.n)
+        pattern = self._data.link_pattern.format(n=self.n)
         pdf_url = self.find_regex(pattern, url=self._data.page_url)
         if not pdf_url:
             return None

@@ -66,7 +66,7 @@ class ExphyMirror(Mirror):
         with requests.Session() as session:
             self._login(session)
 
-            xpath = self._data.xpath_fmt.format(n=self._data.n)
+            xpath = self._data.xpath_fmt.format(n=self.n)
             pdf_url = self.find_xpath(
                 xpath,
                 url=self._data.page_url,
