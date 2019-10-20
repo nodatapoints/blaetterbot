@@ -19,9 +19,9 @@ handler = RotatingFileHandler(
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-from utils import config_file
-from fetchers import fetchers
-from telegram import Bot
+from blaetter.utils import config_file
+from blaetter.fetchers import fetchers
+from blaetter.telegram import Bot
 
 logger.info('Starting ...')
 

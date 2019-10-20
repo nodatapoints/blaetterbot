@@ -2,7 +2,7 @@ import requests
 from dataclasses import dataclass
 import logging
 
-from mirror import Mirror, SimpleLookup
+from .mirror import Mirror, SimpleLookup
 
 logger = logging.getLogger('bot')
 

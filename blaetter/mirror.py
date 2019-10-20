@@ -28,6 +28,7 @@ class Mirror(metaclass=ABCMeta):
     """
     @dataclass
     class SerializedMirror:
+        name: str
         file_format: str
         n: int
 
