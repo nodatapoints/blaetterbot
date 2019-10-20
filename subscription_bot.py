@@ -1,3 +1,5 @@
+#!/usr/bin/python3.7
+
 from telegram.ext import CallbackQueryHandler, CommandHandler, Updater
 
 from blaetter.subscription import start_handler, callback_handler

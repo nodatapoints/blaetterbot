@@ -8,7 +8,7 @@ import logging
 import requests
 import lxml.etree as etree
 
-logger = logging.getLogger('bot')
+log = logging.getLogger('bot')
 
 class Mirror(metaclass=ABCMeta):
     """Abstact base class for all Mirrors
@@ -91,13 +91,13 @@ class Mirror(metaclass=ABCMeta):
         text = self.get_text(**kwargs)
         match = re.search(pattern, text)
         if not match:
-            logger.debug(f'could not find pattern /{pattern}/')
+            log.debug(f'could not find pattern /{pattern}/')
             return None
 
         assert match.lastindex == 1, \
             f'expected exactly one group in pattern /{pattern}/, got {match.lastindex}'
 
-        logger.debug(f'found match "{match.group(1)}" for /{pattern}/')
+        log.debug(f'found match "{match.group(1)}" for /{pattern}/')
         return match.group(1)
 
     def find_xpath(self, xpath: str, **kwargs) -> str:
@@ -108,9 +108,9 @@ class Mirror(metaclass=ABCMeta):
             return None
 
         if len(matches) > 1:
-            logger.warning(f'got multiple ({len(matches)}) matches for xpath "{xpath}"')
+            log.warning(f'got multiple ({len(matches)}) matches for xpath "{xpath}"')
 
-        logger.debug(f'found match "{matches[0]}" for "{xpath}"')
+        log.debug(f'found match "{matches[0]}" for "{xpath}"')
         return matches[0]
 
 class SimpleLookup(Mirror):

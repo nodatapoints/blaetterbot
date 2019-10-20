@@ -8,7 +8,7 @@ from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from . import config
 
 import logging
-logger = logging.getLogger('bot')
+log = logging.getLogger('bot')
 
 subscribers_dir = Path('subscribers')
 
@@ -49,7 +49,7 @@ def subscription_file(uid: Union[str, Path], readonly=False):
 
     if not user_file.exists():
         user_file.touch()
-        logger.debug(f'Created {user_file.as_posix()}')
+        log.debug(f'Created {user_file.as_posix()}')
 
     fobj = user_file.open('r' if readonly else 'r+')
 
