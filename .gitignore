@@ -5,3 +5,5 @@ tags
 config.yaml
 subscribers/*
 *.log
+*.db
+
