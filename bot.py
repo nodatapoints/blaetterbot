@@ -19,13 +19,13 @@ handler = RotatingFileHandler(
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-from utils import config
+from utils import config_file
 from fetchers import fetchers
 from telegram import Bot
 
 logger.info('Starting ...')
 
-with config('config.yaml') as config_data:
+with config_file('config.yaml') as config_data:
     logger.setLevel(config_data['log_level'])
 
     bot = Bot(config_data['token'])
