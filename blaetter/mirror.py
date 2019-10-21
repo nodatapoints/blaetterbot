@@ -10,6 +10,8 @@ import lxml.etree as etree
 
 from .database import get_n, increment_n
 
+__all__ = 'Mirror', 'SimpleLookup', 'SimpleGet'
+
 log = logging.getLogger('bot')
 
 class Mirror(metaclass=ABCMeta):

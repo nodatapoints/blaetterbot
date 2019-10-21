@@ -2,9 +2,9 @@ import requests
 from dataclasses import dataclass
 import logging
 
-from .mirror import Mirror, SimpleLookup
+from .mirror import *
 
-logger = logging.getLogger('bot')
+log = logging.getLogger('bot')
 
 _fetchers = {}
 
@@ -80,6 +80,33 @@ class Exphy1Mirror(Mirror):
 
             return pdf
 
+@register('ana3')
+class AnaMirror(Mirror):
+    @dataclass
+    class DataFormat(Mirror.SerializedMirror):
+        login_url: str
+        email: str
+        password: str
+        link_pattern: str
+
+    def fetch(self) -> (bytes, None):
+        with requests.Session() as session:
+            response = session.post(url=self._data.login_url, data={
+                'email': self._data.email,
+                'password': self._data.password
+            })
+
+            response.raise_for_status()
+            log.debug('ana3: logged in successfully')
+
+            url = self._data.link_pattern.format(n=self.n)
+            pdf = session.get(url)
+            if pdf.ok:
+                return pdf
+
+            else:
+                log.debug(f'ana3: could not find {url}')
+
 
 @register('theo3')
 class TheoMirror(SimpleLookup):
@@ -89,10 +116,6 @@ class TheoMirror(SimpleLookup):
 class Exphy1Mirror(SimpleLookup):
     pass
 
-@register('ana3')
-class AnaMirror(SimpleLookup):
-    pass
-
 @register('la')
 class TheoMirror(SimpleLookup):
     pass
@@ -100,7 +123,6 @@ class TheoMirror(SimpleLookup):
 @register('homa3')
 class HoMaMirror(SimpleLookup):
     pass
-
 
 @register('alg1')
 class AlgebraMirror(SimpleLookup):
