@@ -28,7 +28,6 @@ def start_handler(update: Update, context: CallbackContext):
     uid = update.message.from_user.id
     init_msg = previous_start_message(uid)
     new_user = init_msg is None
-    breakpoint()
 
     if not new_user:
         try:
