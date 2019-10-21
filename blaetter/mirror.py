@@ -130,3 +130,14 @@ class SimpleLookup(Mirror):
         pdf = requests.get(self._data.link_base + pdf_url)
         pdf.raise_for_status()
         return pdf
+
+class SimpleGet(Mirror):
+    @dataclass
+    class DataFormat(Mirror.SerializedMirror):
+        link: str
+
+    def fetch(self):
+        url = self._data.link.format(n=self.n)
+        pdf = requests.get(url)
+        if pdf.ok:
+            return pdf
