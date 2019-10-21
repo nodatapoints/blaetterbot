@@ -102,6 +102,7 @@ class AnaMirror(Mirror):
             url = self._data.link_pattern.format(n=self.n)
             pdf = session.get(url)
             if pdf.ok:
+                log.info(f'found {url}')
                 return pdf
 
             else:

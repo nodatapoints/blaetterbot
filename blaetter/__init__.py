@@ -7,6 +7,7 @@ with open('config.yaml') as fobj:
 
 fetch_log = logging.getLogger('fetch')
 subscr_log = logging.getLogger('subscr')
+tel_log = logging.getLogger('telegram')
 
 formatter = logging.Formatter(
     fmt='{asctime} [{levelname:^7s}] {msg}',
@@ -20,8 +21,9 @@ subscr_handler = logging.FileHandler('logs/subscriptions.log')
 fetch_handler.setFormatter(formatter)
 subscr_handler.setFormatter(formatter)
 
-logging.root.setLevel(config['log_level'])
+fetch_log.setLevel(config['log_level'])
+subscr_log.setLevel(config['log_level'])
 
-logging.root.addHandler(subscr_handler)
-fetch_log.addHandler(fetch_handler)
+tel_log.addHandler(subscr_handler)
 subscr_log.addHandler(subscr_handler)
+fetch_log.addHandler(fetch_handler)

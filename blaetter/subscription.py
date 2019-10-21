@@ -41,11 +41,14 @@ def generate_keyboard(subscriptions=set()):
 
 def start_handler(update: Update, context: CallbackContext):
     uid = update.message.from_user.id
+    log.info(f'got start from uid={uid}')
+
     init_msg = previous_start_message(uid)
     new_user = init_msg is None
 
     if not new_user:
         try:
+            log.debug(f'Got duplicate /start from uid={uid}')
             update.message.reply_text(
                 text='Bitte nutze die Start-Nachricht. ☝️',
                 reply_to_message_id=init_msg)
@@ -53,6 +56,8 @@ def start_handler(update: Update, context: CallbackContext):
         # When the user is already in the database but deleted
         # the initial message
         except BadRequest:
+            log.info(f'Got bad request (uid {uid}, msg {init_msg})')
+
             with subscriptions(uid) as subscr:
                 # FIXME duplicated code
                 kbd = generate_keyboard(subscr)
@@ -70,6 +75,7 @@ def start_handler(update: Update, context: CallbackContext):
             reply_markup=kbd,
             parse_mode='Markdown'
         )
+        log.info(f'Added uid={uid}')
         insert_new_user(uid, init_msg.message_id)
 
 
@@ -79,6 +85,7 @@ def callback_handler(update: Update, context: CallbackContext):
 
     with subscriptions(uid) as subscr:
         subscr ^= {lecture}
+        log.debug(f'changed lectures to {subscr} for uid={uid}')
 
     kbd = generate_keyboard(subscr)
     update.callback_query.message.edit_reply_markup(reply_markup=kbd)
