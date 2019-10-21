@@ -2,8 +2,14 @@
 
 import sqlite3
 from blaetter import config
+from pathlib import Path
 
-con = sqlite3.connect('subscribers.db')
+db = Path('subscribers.db')
+if db.exists():
+    print('deleted db')
+    db.unlink()  # delete the db
+
+con = sqlite3.connect(db)
 
 with con:
     con.executescript("""

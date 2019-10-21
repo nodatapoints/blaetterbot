@@ -2,14 +2,16 @@ from contextlib import contextmanager
 
 from telegram.ext import CallbackContext
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.error import BadRequest
 
-from .database import subscribed_users, subscriptions
+from .database import subscribed_users, subscriptions, \
+    previous_start_message, insert_new_user, update_init_msg
 from . import config
 
 import logging
 log = logging.getLogger('bot')
 
-def generate_keyboard(subscriptions):
+def generate_keyboard(subscriptions=set()):
     keyboard = []
     for lecture_id, lecture in config['mirrors'].items():
         line = lecture['name']
@@ -24,9 +26,28 @@ def generate_keyboard(subscriptions):
 
 def start_handler(update: Update, context: CallbackContext):
     uid = update.message.from_user.id
-    with subscriptions(uid, init_msg_id=update.message.message_id) as subscr:
-        kbd = generate_keyboard(subscr)
-        update.message.reply_text('Choose', reply_markup=kbd)
+    init_msg = previous_start_message(uid)
+    new_user = init_msg is None
+
+    if not new_user:
+        try:
+            update.message.reply_text(
+                text='Bitte hier',
+                reply_to_message_id=init_msg)
+
+        # When the user is already in the database but deleted
+        # the initial message
+        except BadRequest:
+            with subscriptions(uid) as subscr:
+                # FIXME duplicated code
+                kbd = generate_keyboard(subscr)
+                init_msg = update.message.reply_text('Choose', reply_markup=kbd)
+                update_init_msg(uid, init_msg.message_id)
+
+    else:
+        kbd = generate_keyboard()
+        init_msg = update.message.reply_text('Choose', reply_markup=kbd)
+        insert_new_user(uid, init_msg.message_id)
 
 
 def callback_handler(update: Update, context: CallbackContext):
