@@ -11,6 +11,21 @@ from . import config
 import logging
 log = logging.getLogger('bot')
 
+initial_text = """\
+```
+==================
+ _             
+|_)|._._|__|_ _  _ 
+|_)|(_| |_ |_(/_| 
+  weniger Krampf
+      v1.1
+==================
+```
+Wähle deine Vorlesungen aus und erhalte alle neuen Übungsblätter.
+
+_Deine Vorlesung nicht dabei? Schreib mich an (@nodatapoints)_
+"""
+
 def generate_keyboard(subscriptions=set()):
     keyboard = []
     for lecture_id, lecture in config['mirrors'].items():
@@ -32,7 +47,7 @@ def start_handler(update: Update, context: CallbackContext):
     if not new_user:
         try:
             update.message.reply_text(
-                text='Bitte hier',
+                text='Bitte nutze die Start-Nachricht. ☝️',
                 reply_to_message_id=init_msg)
 
         # When the user is already in the database but deleted
@@ -41,12 +56,20 @@ def start_handler(update: Update, context: CallbackContext):
             with subscriptions(uid) as subscr:
                 # FIXME duplicated code
                 kbd = generate_keyboard(subscr)
-                init_msg = update.message.reply_text('Choose', reply_markup=kbd)
+                init_msg = update.message.reply_text(
+                    initial_text,
+                    reply_markup=kbd,
+                    parse_mode='Markdown'
+                )
                 update_init_msg(uid, init_msg.message_id)
 
     else:
         kbd = generate_keyboard()
-        init_msg = update.message.reply_text('Choose', reply_markup=kbd)
+        init_msg = update.message.reply_text(
+            initial_text,
+            reply_markup=kbd,
+            parse_mode='Markdown'
+        )
         insert_new_user(uid, init_msg.message_id)
 
 
