@@ -19,7 +19,7 @@ def register(name):
 
 def fetchers(config_data):
     for cls_name, data in config_data['mirrors'].items():
-        logger.debug(f'loading {cls_name}')
+        log.debug(f'loading {cls_name}')
         cls = _fetchers[cls_name]
         instance = cls(data)
         yield instance
@@ -47,7 +47,7 @@ class Exphy1Mirror(Mirror):
             session=session
         )
         if not login_token:
-            logger.error('could not find logintoken')
+            log.error('could not find logintoken')
             raise self.LoginError('no logintoken')
 
         logging.debug(f'logintoken={login_token}')
