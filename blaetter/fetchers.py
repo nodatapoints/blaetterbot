@@ -97,3 +97,7 @@ class TheoMirror(SimpleLookup):
 class HoMaMirror(SimpleLookup):
     pass
 
+
+@register('alg')
+class AlgebraMirror(SimpleLookup):
+    pass
