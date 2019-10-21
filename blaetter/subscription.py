@@ -9,7 +9,7 @@ from .database import subscribed_users, subscriptions, \
 from . import config
 
 import logging
-log = logging.getLogger('bot')
+log = logging.getLogger('subscr')
 
 initial_text = """\
 ```

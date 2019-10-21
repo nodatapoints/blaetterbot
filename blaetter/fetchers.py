@@ -4,7 +4,7 @@ import logging
 
 from .mirror import *
 
-log = logging.getLogger('bot')
+log = logging.getLogger('fetch')
 
 _fetchers = {}
 

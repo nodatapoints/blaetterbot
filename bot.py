@@ -8,7 +8,7 @@ from blaetter.database import subscribed_users
 from blaetter import config
 
 import logging
-log = logging.getLogger('bot')
+log = logging.getLogger('fetch')
 
 log.info('Starting ...')
 

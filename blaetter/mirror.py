@@ -12,7 +12,7 @@ from .database import get_n, increment_n
 
 __all__ = 'Mirror', 'SimpleLookup', 'SimpleGet'
 
-log = logging.getLogger('bot')
+log = logging.getLogger('fetch')
 
 class Mirror(metaclass=ABCMeta):
     """Abstact base class for all Mirrors
