@@ -26,8 +26,8 @@ def fetchers(config_data):
         data.update(instance.data)
 
 
-@register('ex')
-class ExphyMirror(Mirror):
+@register('ex3')
+class Exphy1Mirror(Mirror):
     class LoginError(Exception):
         """Login failed"""
 
@@ -81,11 +81,15 @@ class ExphyMirror(Mirror):
             return pdf
 
 
-@register('theo')
+@register('theo3')
 class TheoMirror(SimpleLookup):
     pass
 
-@register('ana')
+@register('ex1')
+class Exphy1Mirror(SimpleLookup):
+    pass
+
+@register('ana3')
 class AnaMirror(SimpleLookup):
     pass
 
@@ -93,11 +97,11 @@ class AnaMirror(SimpleLookup):
 class TheoMirror(SimpleLookup):
     pass
 
-@register('homa')
+@register('homa3')
 class HoMaMirror(SimpleLookup):
     pass
 
 
-@register('alg')
+@register('alg1')
 class AlgebraMirror(SimpleLookup):
     pass

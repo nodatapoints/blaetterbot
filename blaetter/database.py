@@ -10,8 +10,9 @@ def subscriptions(uid: int):
         cur = con.cursor()
         cur.execute('SELECT subscriptions FROM users WHERE uid=?', (uid,))
         comma_separated, = cur.fetchone()
-
-        subscr = set(comma_separated.split(','))
+        
+        # use set() for '' the split otherwise
+        subscr = set(comma_separated and comma_separated.split(','))
 
         yield subscr
 
