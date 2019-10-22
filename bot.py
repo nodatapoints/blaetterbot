@@ -32,6 +32,7 @@ for mirror in fetchers(config):
                 document=doc,
                 filename=mirror.filename
             )
+            doc.seek(0)  # to read the file again
 
         mirror.increment()
         log.info(f'uploaded {mirror.filename}')
