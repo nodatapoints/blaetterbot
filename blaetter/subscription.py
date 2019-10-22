@@ -5,7 +5,8 @@ from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.error import BadRequest
 
 from .database import subscribed_users, subscriptions, \
-    previous_start_message, insert_new_user, update_init_msg
+    previous_start_message, insert_new_user, update_init_msg, \
+    all_users
 from . import config
 
 import logging
@@ -38,6 +39,13 @@ def generate_keyboard(subscriptions=set()):
 
     return InlineKeyboardMarkup.from_column(keyboard)
 
+def start_message(update, uid: int, subscriptions=set()):
+    kbd = generate_keyboard(subscriptions)
+    return update.message.reply_text(
+        initial_text,
+        reply_markup=kbd,
+        parse_mode='Markdown'
+    )
 
 def start_handler(update: Update, context: CallbackContext):
     uid = update.message.from_user.id
@@ -59,25 +67,13 @@ def start_handler(update: Update, context: CallbackContext):
             log.info(f'Got bad request (uid {uid}, msg {init_msg})')
 
             with subscriptions(uid) as subscr:
-                # FIXME duplicated code
-                kbd = generate_keyboard(subscr)
-                init_msg = update.message.reply_text(
-                    initial_text,
-                    reply_markup=kbd,
-                    parse_mode='Markdown'
-                )
+                init_msg = start_message(update, uid, subscr)
                 update_init_msg(uid, init_msg.message_id)
 
     else:
-        kbd = generate_keyboard()
-        init_msg = update.message.reply_text(
-            initial_text,
-            reply_markup=kbd,
-            parse_mode='Markdown'
-        )
+        init_msg = start_message(update, uid)
         log.info(f'Added uid={uid}')
         insert_new_user(uid, init_msg.message_id)
-
 
 def callback_handler(update: Update, context: CallbackContext):
     uid = update.callback_query.message.chat_id

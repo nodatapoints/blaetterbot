@@ -38,6 +38,9 @@ def subscribed_users(lecture: str):
     cur = con.execute('SELECT uid FROM users WHERE instr(subscriptions, ?)', (lecture,))
     return map(itemgetter(0), cur)
 
+def all_users():
+    cur = con.execute('SELECT * FROM users')
+    yield from cur
 
 def get_n(lecture: str):
     cur = con.execute('SELECT n FROM lectures WHERE id=?', (lecture,))
