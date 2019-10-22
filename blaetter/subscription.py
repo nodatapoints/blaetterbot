@@ -5,8 +5,7 @@ from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.error import BadRequest
 
 from .database import subscribed_users, subscriptions, \
-    previous_start_message, insert_new_user, update_init_msg, \
-    all_users
+    previous_start_message, insert_new_user, update_init_msg
 from . import config
 
 import logging
@@ -85,4 +84,3 @@ def callback_handler(update: Update, context: CallbackContext):
 
     kbd = generate_keyboard(subscr)
     update.callback_query.message.edit_reply_markup(reply_markup=kbd)
-
