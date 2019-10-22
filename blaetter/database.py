@@ -36,7 +36,7 @@ def update_init_msg(uid: int, init_msg: int):
 
 def subscribed_users(lecture: str):
     cur = con.execute('SELECT uid FROM users WHERE instr(subscriptions, ?)', (lecture,))
-    return map(itemgetter(0), cur)
+    yield from map(itemgetter(0), cur)
 
 def all_start_messages():
     cur = con.execute('SELECT uid, init_msg FROM users')

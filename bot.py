@@ -1,5 +1,7 @@
 #!/usr/bin/python3.7
 
+from itertools import chain
+
 from telegram import Bot
 
 from blaetter.fetchers import fetchers
@@ -20,10 +22,14 @@ for mirror in fetchers(config):
             log.debug('skipping')
             continue
 
-        for uid in subscribed_users(mirror.lecture_id):
+        chats = chain((config['channel'],),
+            subscribed_users(mirror.lecture_id))
+
+        doc = mirror.process_pdf(pdf)
+        for chat in chats:
             bot.send_document(
-                chat_id=uid,
-                document=mirror.process_pdf(pdf),
+                chat_id=chat,
+                document=doc,
                 filename=mirror.filename
             )
 
