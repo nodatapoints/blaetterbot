@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 
 from telegram.ext import CallbackContext
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton, Message
 from telegram.error import BadRequest
 
 from .database import subscribed_users, subscriptions, \
@@ -40,11 +40,13 @@ def generate_keyboard(subscriptions=set()):
 
 def start_message(update, uid: int, subscriptions=set()):
     kbd = generate_keyboard(subscriptions)
-    return update.message.reply_text(
+    reply = update.message.reply_text(
         initial_text,
         reply_markup=kbd,
         parse_mode='Markdown'
     )
+    update.message.delete()
+    return reply
 
 def start_handler(update: Update, context: CallbackContext):
     uid = update.message.from_user.id
@@ -54,20 +56,25 @@ def start_handler(update: Update, context: CallbackContext):
     new_user = init_msg is None
 
     if not new_user:
+        log.debug(f'Got duplicate /start from uid={uid}')
         try:
-            log.debug(f'Got duplicate /start from uid={uid}')
-            update.message.reply_text(
-                text='Bitte nutze die Start-Nachricht. ☝️',
-                reply_to_message_id=init_msg)
+            context.bot.delete_message(uid, init_msg)
 
-        # When the user is already in the database but deleted
-        # the initial message
         except BadRequest:
-            log.info(f'Got bad request (uid {uid}, msg {init_msg})')
+            log.warning(f'Could not delete init msg for uid={uid}')
+            try:
+                context.bot.edit_message_text(
+                    chat_id=uid,
+                    message_id=init_msg,
+                    text='[deleted]')
 
-            with subscriptions(uid) as subscr:
-                init_msg = start_message(update, uid, subscr)
-                update_init_msg(uid, init_msg.message_id)
+            except BadRequest:
+                log.warning(f'Could not edit init msg for uid={uid}')
+
+        with subscriptions(uid) as subscr:
+            init_msg = start_message(update, uid, subscr)
+            log.debug(f'init message for {uid} reset to {init_msg.message_id}')
+            update_init_msg(uid, init_msg.message_id)
 
     else:
         init_msg = start_message(update, uid)
