@@ -25,11 +25,18 @@ def fetchers(config_data):
         yield instance
         data.update(instance.data)
 
-
-@register('ex3')
-class Exphy1Mirror(Mirror):
+class MoodleMirror(Mirror):
     class LoginError(Exception):
         """Login failed"""
+
+    session = None
+    def __init__(self, data):
+        super().__init__(data)
+
+        # log in once for all MoodleMirrors
+        if self.session is None:
+            self.session = requests.Session()
+            self._login()
 
     @dataclass
     class DataFormat(Mirror.SerializedMirror):
@@ -40,17 +47,17 @@ class Exphy1Mirror(Mirror):
         username: str
         password: str
 
-    def _login(self, session: requests.Session):
+    def _login(self):
         login_token = self.find_regex(
             self._data.login_token_pattern,
             url=self._data.login_url,
-            session=session
+            session=self.session
         )
         if not login_token:
             log.error('could not find logintoken')
             raise self.LoginError('no logintoken')
 
-        logging.debug(f'logintoken={login_token}')
+        log.debug(f'logintoken={login_token}')
 
         login_form = {
             'username': self._data.username,
@@ -58,27 +65,24 @@ class Exphy1Mirror(Mirror):
             'logintoken': login_token
         }
 
-        response = session.post(self._data.login_url, data=login_form)
+        response = self.session.post(self._data.login_url, data=login_form)
         response.raise_for_status()
-        logging.debug('logged in successfully')
+        log.debug('logged in successfully')
 
     def fetch(self) -> (bytes, None):
-        with requests.Session() as session:
-            self._login(session)
+        xpath = self._data.xpath_fmt.format(n=self.n)
+        pdf_url = self.find_xpath(
+            xpath,
+            url=self._data.page_url,
+            session=self.session
+        )
+        if not pdf_url:
+            return None
 
-            xpath = self._data.xpath_fmt.format(n=self.n)
-            pdf_url = self.find_xpath(
-                xpath,
-                url=self._data.page_url,
-                session=session
-            )
-            if not pdf_url:
-                return None
+        pdf = self.session.get(pdf_url)
+        pdf.raise_for_status()
 
-            pdf = session.get(pdf_url)
-            pdf.raise_for_status()
-
-            return pdf
+        return pdf
 
 @register('ana3')
 class AnaMirror(Mirror):
@@ -108,6 +112,17 @@ class AnaMirror(Mirror):
             else:
                 log.debug(f'ana3: could not find {url}')
 
+@register('ex3')
+class ExphyMirror(MoodleMirror):
+    pass
+
+@register('astro')
+class AstroMirror(MoodleMirror):
+    pass
+
+@register('elektro')
+class ElektroMirror(MoodleMirror):
+    pass
 
 @register('theo3')
 class TheoMirror(SimpleLookup):
