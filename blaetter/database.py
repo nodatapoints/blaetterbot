@@ -31,7 +31,7 @@ def insert_new_user(uid: int, init_msg: int):
     con.commit()
 
 def update_init_msg(uid: int, init_msg: int):
-    con.execute('UPDATE users SET init_msg=? WHERE uid=?', (uid, init_msg))
+    con.execute('UPDATE users SET init_msg=? WHERE uid=?', (init_msg, uid))
     con.commit()
 
 def subscribed_users(lecture: str):
