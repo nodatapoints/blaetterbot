@@ -143,3 +143,8 @@ class HoMaMirror(SimpleLookup):
 @register('alg1')
 class AlgebraMirror(SimpleLookup):
     pass
+
+@register('stat')
+class StatistikMirror(SimpleGet):
+    pass
+
