@@ -148,3 +148,6 @@ class AlgebraMirror(SimpleLookup):
 class StatistikMirror(SimpleGet):
     pass
 
+@register('info')
+class InfoMirror(SimpleGet):
+    pass
