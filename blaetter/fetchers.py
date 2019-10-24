@@ -34,8 +34,8 @@ class MoodleMirror(Mirror):
         super().__init__(data)
 
         # log in once for all MoodleMirrors
-        if self.session is None:
-            self.session = requests.Session()
+        if MoodleMirror.session is None:
+            MoodleMirror.session = requests.Session()
             self._login()
 
     @dataclass
